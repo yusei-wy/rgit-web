@@ -1,0 +1,24 @@
+[package]
+name = "lib"
+version = "0.1.0"
+authors = ["yusei-wy <yusei.kasa@gmail.com>"]
+edition = "2018"
+
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = false
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies.rgit]
+git = "https://github.com/yusei-wy/rgit"
+
+[dependencies]
+wasm-bindgen = {versoin = "0.2.68", features=["serde-serialize"]}
+hex = "0.4.2"
+web-sys = {version="0.3.45", features=["console"]}
+serde = "1.0.116"
+
+[dependencies.chrono]
+features = ["wasmbind"]
