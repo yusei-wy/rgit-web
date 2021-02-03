@@ -4,6 +4,11 @@ use rgit::Git;
 use std::result::Result;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
+use web_sys::console::log_1;
+
+fn log(s: &str) {
+    log_1(&JsValue::from(s));
+}
 
 #[wasm_bindgen]
 pub struct Context {
@@ -54,13 +59,7 @@ impl Context {
 
         let index = self
             .git
-            .read_index()
-            .and_then(|x| self.git.ls_files_stage(&x))
-            .map_err(|x| JsValue::from(x.to_string()))?;
-        // git update-index --add -cacheinfo <mode> <hash> <name>
-        let index = self
-            .git
-            .update_index(index, &blob.calc_hash(), path)
+            .update_index(&blob.calc_hash(), path)
             .map_err(|x| JsValue::from(x.to_string()))?;
         self.git
             .write_index(&index)
@@ -92,6 +91,9 @@ impl Context {
             )
             .map(GitObject::Commit)
             .map_err(|x| JsValue::from(x.to_string()))?;
+        self.git
+            .write_object(&commit)
+            .map_err(|x| JsValue::from(x.to_string()))?;
 
         // git update-ref refs/heads/master <hash>
         let head_ref = self
@@ -111,9 +113,4 @@ impl Context {
             .and_then(|x| self.git.read_ref(x))
             .map_err(|x| JsValue::from(x.to_string()))
     }
-}
-
-#[wasm_bindgen]
-pub fn add(a: i32, b: i32) -> i32 {
-    a + b
 }
